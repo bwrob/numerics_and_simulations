@@ -224,3 +224,7 @@ ignore-signatures = true
 
 # Minimum lines number of a similarity.
 min-similarity-lines = 8
+
+[tool.pylint.typecheck]
+# List of decorators that change the signature of a decorated function.
+signature-mutators = ["debug"]
