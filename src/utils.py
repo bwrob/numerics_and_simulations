@@ -1,25 +1,47 @@
-import collections
+"""Common utility functions and decorators."""
+
 import time
-
-import matplotlib.animation as animation
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-import numpy as np
+from typing import Any, Callable, NamedTuple, Union
 
 
-# decorator for debugging purposes
-# debug - gather debugging info during computation:
-#   y   full
-#   n   none
-# value - output result only rather than named tuple with auxiliary data:
-#   y   value
-#   n   all data
-# best to use with default control so that the settings for all functions can be switched at once
-def debugging(control="yny"):
+def debugging(control: str = "yny") -> Callable[[Callable], Callable]:
+    """
+    Decorator function that adds debugging capabilities to other functions.
+
+    Parameters:
+        control (str): A string specifying the control options for debugging.
+            The string should have three characters, representing the debug, value, and timer options.
+            The debug option can be 'y' or 'n', indicating whether to enable or disable debugging.
+            The value option can be 'y' or 'n', indicating whether to print the result value.
+            The timer option can be 'y' or 'n', indicating whether to print the execution time.
+
+    Returns:
+        function: The decorated function with debugging capabilities.
+
+    Example:
+        @debugging("yny")
+        def my_function(debug: bool, x: int) -> NamedTuple('Result', [('value', int)]):
+            if debug:
+                print("Debugging is enabled")
+            return Result(value=x**2)
+
+        result = my_function(True, 5)
+        # Output: Debugging is enabled
+        #         my_function evaluated in 0.0001 seconds
+        #         25
+
+    Note:
+        The decorated function should accept a debug parameter as the first argument.
+        The debug parameter is used to control the debugging behavior within the function.
+        If the debug parameter is set to True, additional debugging information will be printed.
+        If the value parameter is set to True, the result value will be printed.
+        If the timer parameter is set to True, the execution time will be printed.
+
+    """
     debug, value, timer = control
 
-    def wrapper(f):
-        def wrapped(*args, **kwargs):
+    def wrapper(f: Callable) -> Callable:
+        def wrapped(*args: Any, **kwargs: Any) -> Union[NamedTuple, Any]:
             if timer == "y":
                 tic = time.perf_counter()
             result = f(debug, *args, **kwargs)
@@ -38,27 +60,3 @@ def debugging(control="yny"):
         return wrapped
 
     return wrapper
-
-
-# named tuple for root-finding output
-RootFindingData = collections.namedtuple(
-    "RootFindingData", ["value", "iteration_no", "iteration_points"]
-)
-
-
-# animate points on plot
-def animate(data):
-    x, y = [point[0] for point in data], [point[1] for point in data]
-    colors = cm.rainbow(np.linspace(0, 1, len(y)))
-    fig = plt.figure()
-    plt.xlim(-1, 1)
-    plt.ylim(-1, 1)
-    graph = plt.scatter([], [])
-
-    def animate(i):
-        graph.set_offsets(np.vstack((x[: i + 1], y[: i + 1])).T)
-        graph.set_facecolors(colors[: i + 1])
-        return graph
-
-    ani = animation.FuncAnimation(fig, animate, repeat=False, interval=200)
-    plt.show()
