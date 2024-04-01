@@ -2,46 +2,30 @@
 
 from typing import List, Tuple
 
-import matplotlib
-import matplotlib.animation as animation
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.animation import FuncAnimation
+from matplotlib.cm import rainbow
 
+def animate_data(data: List[Tuple[float, float]], *, title: str = "") -> None:
+    """Animate scatter plot of data points."""
+    x, y = zip(*data)
+    colors = rainbow(np.linspace(0, 1, len(y)))
 
-def animate(data: List[Tuple[float, float]]) -> None:
-    """
-    Animate a scatter plot of data points.
+    fig, ax = plt.subplots()
+    if title:
+        ax.set_title(title)
+    ax.set_xlim(0, 2)
+    ax.set_ylim(-1, 1)
+    ax.grid(True)
+    ax.set_aspect("equal")
 
-    Parameters:
-        data (List[Tuple[float, float]]): A list of tuples representing the x and y coordinates of the data points.
+    graph = ax.scatter([], [])
 
-    Returns:
-        None
+    def update(frame: int) -> None:
+        """Update scatter plot with new data points."""
+        graph.set_offsets(np.column_stack((x[: frame + 1], y[: frame + 1])))
+        graph.set_facecolors(colors[: frame + 1])
 
-    """
-    x, y = [point[0] for point in data], [point[1] for point in data]
-    colors = cm.rainbow(np.linspace(0, 1, len(y)))
-    fig = plt.figure()
-    plt.xlim(-1, 1)
-    plt.ylim(-1, 1)
-    graph = plt.scatter([], [])
-
-    def animate(i: int) -> matplotlib.collections.PathCollection:
-        """
-        Update the scatter plot with new data points.
-
-        Parameters:
-            i (int): The index of the data point to update.
-
-        Returns:
-            matplotlib.collections.PathCollection: The updated scatter plot.
-
-        """
-        graph.set_offsets(np.vstack((x[: i + 1], y[: i + 1])).T)
-        graph.set_facecolors(colors[: i + 1])
-        return graph
-
-    ani = animation.FuncAnimation(fig, animate, repeat=False, interval=200)
-    plt.show()
+    _ = FuncAnimation(fig, update, frames=len(y), repeat=False)
     plt.show()

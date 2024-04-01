@@ -1,6 +1,8 @@
 from math import sin
 
-from utils import RootFindingData, animate, debugging
+from simple_types import RootFindingData
+from utils import debug
+from visualize import animate_data
 
 
 # Newton Method
@@ -8,7 +10,7 @@ from utils import RootFindingData, animate, debugging
 # 1. Find a starting point x_0 "close" to the root
 # 2. Iterate x_{n+1} = x_n - f(x_n)/f'(x_n)
 # 3. x^* = Lim x_n
-@debugging()
+@debug()
 def root_newton(debug, f, start_point, epsilon, h=0.000001):
     max_iter = 100000
     i = 0
@@ -34,7 +36,7 @@ def root_newton(debug, f, start_point, epsilon, h=0.000001):
 # 1. Find two starting points x_0,x_1 "close" to the root
 # 2. Iterate x_{n+1} = x_n - f(x_n)*(f(x_n) - f(x{n-1}))/(x_n - x_{n-1})
 # 3. x^* = Lim x_n
-@debugging()
+@debug()
 def root_secant(debug, f, point_zero, point_one, epsilon):
     max_iter = 100000
     i = 0
@@ -64,7 +66,7 @@ def root_secant(debug, f, point_zero, point_one, epsilon):
 #   b) if weighted then find root of linear interpolation (a,f(a)) and (b,f(b))
 # 3. Choose (a,midpoint) or (midpoint,b) depending on condition 1. Iterate.
 # 4. x^* = lim of midpoints
-@debugging()
+@debug()
 def root_bisection(debug, f, a, b, epsilon, weighted):
     i = 0
     points = []
@@ -98,23 +100,27 @@ if __name__ == "__main__":
     g = lambda x: (x + 2) * (x - 0.5) + sin(x - 0.5)
     func = f
     accuracy = 1e-12
-    animated = False
+    animated = True
 
     result1 = root_newton(func, 1, accuracy)
     print("result Newton: {}".format(result1))
-    if animated:
-        animate(result1.iteration_points)
 
     result2 = root_secant(func, 0.1, 1, accuracy)
     print("result secant: {}".format(result2))
-    if animated:
-        animate(result2.iteration_points)
 
     result3 = root_bisection(func, 0.1, 1, accuracy, weighted=False)
     print("result bisection: {}".format(result3))
-    if animated:
-        animate(result3.iteration_points)
+
     result4 = root_bisection(func, 0.1, 1, accuracy, weighted=True)
     print("result bisection: {}".format(result4))
+
     if animated:
-        animate(result4.iteration_points)
+        results = [
+            (result1, "newton"),
+            (result2, "secant"),
+            (result3, "bisection"),
+            (result4, "bisection weighted"),
+        ]
+        for result, name in results:
+            print(f"result {name}: {result}")
+            animate_data(result.iteration_points)
