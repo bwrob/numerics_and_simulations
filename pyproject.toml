@@ -18,6 +18,13 @@ pandas = "^2.2.0"
 matplotlib = "^3.8.3"
 seaborn = "^0.13.2"
 scipy = "^1.12.0"
+pyopengl = "^3.1.7"
+pyopengl-accelerate = "^3.1.7"
+pygame = "^2.5.2"
+moderngl = {extras = ["headless"], version = "^5.10.0"}
+moderngl-window = "^2.4.5"
+vispy = "^0.14.2"
+pyopengltk = "^0.0.4"
 
 
 [tool.poetry.group.dev.dependencies]
