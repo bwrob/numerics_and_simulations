@@ -125,7 +125,9 @@ def root_bisection(
 
     if check == 0:
         return RootFindingData(
-            value=a if y_1 == 0 else b, iteration_points=[], iteration_no=0
+            value=(a if y_1 == 0 else b),
+            iteration_points=[],
+            iteration_no=0,
         )
     if check > 0:
         raise ValueError("Root finding failed. f(a) and f(b) have the same sign")
@@ -141,7 +143,9 @@ def root_bisection(
             points.append((midpoint, y_3))
         if abs(y_3) < epsilon:
             return RootFindingData(
-                value=midpoint, iteration_points=points, iteration_no=i
+                value=midpoint,
+                iteration_points=points,
+                iteration_no=i,
             )
         if y_1 * y_3 < 0:
             b = midpoint
